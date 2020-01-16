@@ -97,7 +97,7 @@ class Blockchain(object):
     #     return proof
 
     @staticmethod
-    def valid_proof(block_string, proof):
+    def valid_proof(block_string, proof): #Do i need this here anymore?
         """
         Validates the Proof:  Does hash(block_string, proof) contain 3
         leading zeroes?  Return true if the proof is valid
@@ -128,22 +128,28 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     data = request.get_json()
-    print("data", data)
 
     if data['proof'] and data['id']:
         # Run the proof of work algorithm to get the next proof
         proof = data['proof']
-        print("proof", proof)
+        last_block = blockchain.last_block
+        last_block_string = json.dumps(last_block, sort_keys=True)
+        if blockchain.valid_proof(last_block_string, proof) is True:
         # Forge the new Block by adding it to the chain with the proof
-        previous_hash = blockchain.hash(blockchain.last_block)
-        block = blockchain.new_block(proof, previous_hash)
+            previous_hash = blockchain.hash(blockchain.last_block)
+            block = blockchain.new_block(proof, previous_hash)
 
-        response = {
-            # Send a JSON response with the new block
-            'block': block,
-            'message': 'New Block Forged'
-        }
-        res = 200
+            response = {
+                # Send a JSON response with the new block
+                'block': block,
+                'message': 'New Block Forged'
+            }
+            res = 200
+        else:
+            response = {
+                "message": "message is invalid or already submitted"
+            }
+            res = 200
     else:
         response = {
             'message': 'Error: Need both proof and id'
