@@ -5,6 +5,8 @@ from uuid import uuid4
 
 from flask import Flask, jsonify, request
 
+from flask_cors import CORS, cross_origin
+
 
 class Blockchain(object):
     def __init__(self):
@@ -117,6 +119,7 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
 # Generate a globally unique address for this node
 node_identifier = str(uuid4()).replace('-', '')
@@ -160,6 +163,7 @@ def mine():
 
 
 @app.route('/chain', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def full_chain():
     response = {
         # TODO: Return the chain and its current length
