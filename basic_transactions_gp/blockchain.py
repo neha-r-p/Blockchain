@@ -115,6 +115,23 @@ class Blockchain(object):
 
         return guess_hash[:6] == "000000"
         # return True or False
+    
+    def new_transaction(self, sender, recipient, amount):
+        """
+        Creates a new transaction to go into the next mined block
+        :param sender: <str> Name of the sender
+        :param recipient: <str> Name of the recipient
+        :param amount: <float> amount of transaction
+        :return: <index> The index of the block that will hold the transaction
+        """
+
+        self.current_transactions.append({
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount
+        })
+
+        return self.last_block['index'] + 1
 
 
 # Instantiate our Node
