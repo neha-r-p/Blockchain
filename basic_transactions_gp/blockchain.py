@@ -144,6 +144,21 @@ node_identifier = str(uuid4()).replace('-', '')
 # Instantiate the Blockchain
 blockchain = Blockchain()
 
+@app.route('/transactions/new', methods=['POST'])
+def new_transaction():
+    data = request.get_json()
+
+    required = ['sender', 'recipient', 'amount']
+    if not all(k in data for k in required):
+        response = {'message': "Missing values"}
+        return jsonify(response), 400
+    
+    #create new transaction
+    index = blockchain.new_transaction(data['sender'], data['recipient'], data['amount'])
+    response = {
+        'message': f'Transaction will post to block {index}.'
+    }
+    return jsonify(response), 201
 
 @app.route('/mine', methods=['POST'])
 def mine():
@@ -158,6 +173,12 @@ def mine():
         # Forge the new Block by adding it to the chain with the proof
             previous_hash = blockchain.hash(blockchain.last_block)
             block = blockchain.new_block(proof, previous_hash)
+
+            blockchain.new_transaction(
+                sender="0",
+                recipient=data['id'],
+                amount=100
+            )
 
             response = {
                 # Send a JSON response with the new block
